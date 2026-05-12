@@ -17,6 +17,9 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+private slots:
+    void on_loginPushButton_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
 };
