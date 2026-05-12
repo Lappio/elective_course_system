@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(elective_course_system LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets LinguistTools)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Sql)
 
 qt_standard_project_setup()
 
@@ -11,17 +11,25 @@ qt_add_executable(elective_course_system
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-)
+    db/dbmanager.cpp
+    model/user.h
+    model/course.h
+    model/selection.h
+    model/user.h
+    db/dbmanager.h
+    utils/validators.h
+    utils/validators.cpp
+    utils/passwordutils.h
+    utils/passwordutils.cpp
 
-qt_add_translations(
-    TARGETS elective_course_system
-    TS_FILES elective_course_system_zh_CN.ts
+
 )
 
 target_link_libraries(elective_course_system
     PRIVATE
         Qt::Core
         Qt::Widgets
+        Qt::Sql
 )
 
 install(TARGETS elective_course_system
