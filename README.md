@@ -82,3 +82,154 @@ insert into admin (id, admin_id,admin_name, user_id) VALUES (1,'001',
 用stu_id关联selection表与course表
 用course_id关联course表与selection表
 
+建立selection表时出现的错误
+```sql
+create table selection(
+    id int auto_increment unique PRIMARY KEY ,
+    stu_id char(8) unique not null,  -- 这里有问题！
+    course_id char(7) unique not null -- 这里也有问题！
+);
+```
+存在逻辑漏洞
+一名学生应该能选多门课，所以不能给stu_id加上unique约束
+应该改为
+```sql
+create table selection(
+    id int auto_increment PRIMARY KEY,
+    stu_id char(8) not null comment '外键，关联学生',
+    course_id char(7) not null comment '外键，关联课程',
+    -- 联合唯一约束：同一个学生不能重复选同一门课
+    CONSTRAINT uk_stu_course UNIQUE (stu_id, course_id),
+    -- 添加外键关联
+    CONSTRAINT fk_selection_stu FOREIGN KEY (stu_id) REFERENCES student(stu_id) ON DELETE CASCADE,
+    CONSTRAINT fk_selection_course FOREIGN KEY (course_id) REFERENCES course(course_id) ON DELETE CASCADE
+);
+```
+做一个联合唯一约束也就是说单列可以重复但是不能两列都重复，同时添加上外键关联
+
+数据库的构建第一版先这样
+下面进行用qt项目来连接数据库(Gemini 3.1pro)
+
+第一步是修改cmakelists 导入sql模块
+```cmake
+# 找到类似这样的一行，加上 Sql
+find_package(Qt6 REQUIRED COMPONENTS Widgets Sql)
+# 找到类似这样的一行，加上 Qt6::Sql
+target_link_libraries(elective_course_system PRIVATE Qt6::Widgets Qt6::Sql)
+```
+下面修改mainwindow的代码
+```cpp
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QMessageBox>
+#include <QDebug>
+```
+在mainwindow.cpp里引入头文件
+修改代码
+```cpp
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");   // 创建数据库对象
+    db.setDatabaseName("elective_course_system");
+    db.setHostName("127.0.0.1");
+    db.setPort(3306);  //这是MySQL的默认端口
+    db.setUserName("root") ;  //以root权限访问数据库
+    db.setPassword("12345678"); //这边需要填自己的密码，我的电脑上设置的是12345678
+    if(db.open()){
+        QMessageBox::information(this,"数据库连接成功!","Niceeeeeeeee!!!!!");
+    }
+    else {
+        // 如果连接失败，打印错误信息并弹窗
+        qDebug() << "数据库连接失败: " << db.lastError().text();
+        QMessageBox::critical(this, "连接失败", "无法连接数据库：\n" + db.lastError().text());
+    }
+```
+第一次连接的时候遇到了一个奇怪的错误
+qt.sql.qsqldatabase: QSqlDatabase: can not load requested driver 'QMYSQL', available drivers: QSQLITE QODBC QPSQL QMIMER
+数据库连接失败:  "Driver not loaded Driver not loaded"
+目前因为 开源版权协议（GPL）的冲突，Qt 官方在 macOS 版本里，不再直接提供编译好的 MySQL 驱动文件（libqsqlmysql.dylib）。
+解决方法
+使用homebrew安装一个支持sql的qt
+
+
+
+
+组织此项目的文件结构
+```plain text
+elective_course_system/
+├── CMakeLists.txt
+├── main.cpp
+│
+├── ui/                         # 界面层：窗口、控件、信号槽
+│   ├── login/
+│   │   ├── loginwindow.h
+│   │   ├── loginwindow.cpp
+│   │   └── loginwindow.ui
+│   ├── student/
+│   │   ├── studentwindow.h
+│   │   ├── studentwindow.cpp
+│   │   └── studentwindow.ui
+│   └── admin/
+│       ├── adminwindow.h
+│       ├── adminwindow.cpp
+│       └── adminwindow.ui
+│
+├── db/                         # 数据库基础设施
+│   ├── dbmanager.h
+│   └── dbmanager.cpp
+│
+├── dao/                        # 数据访问层：专门写 SQL
+│   ├── userdao.h
+│   ├── userdao.cpp
+│   ├── coursedao.h
+│   ├── coursedao.cpp
+│   ├── selectiondao.h
+│   └── selectiondao.cpp
+│
+├── model/                      # 实体模型：User、Course、Selection 等
+│   ├── user.h
+│   ├── course.h
+│   └── selection.h
+│
+├── service/                    # 业务逻辑层：权限、选课规则、事务
+│   ├── userservice.h
+│   ├── userservice.cpp
+│   ├── courseservice.h
+│   └── courseservice.cpp
+│
+├── utils/                      # 通用工具
+│   ├── passwordutils.h
+│   ├── passwordutils.cpp
+│   ├── validators.h
+│   └── validators.cpp
+│
+├── resources/
+│   ├── app_resources.qrc
+│   ├── images/
+│   └── styles/
+│       └── app.qss
+│
+└── docs/                       # 课设文档、数据库表结构、ER 图
+    ├── database.sql
+    ├── er_diagram.png
+    └── README.md
+    ```
+model文件夹定义Course,Selection,User类,这三个类仅用于接收数据,并不会直接写SQL
+我的开工顺序
+1. docs/database.sql
+2. model/user.h
+3. model/course.h
+4. model/selection.h
+5. db/dbmanager.h / dbmanager.cpp
+6. dao/userdao.h / userdao.cpp
+7. utils/passwordutils.h / passwordutils.cpp
+8. service/userservice.h / userservice.cpp
+9. ui/login/loginwindow
+10. dao/coursedao.h / coursedao.cpp
+11. dao/selectiondao.h / selectiondao.cpp
+12. service/courseservice.h / courseservice.cpp
+13. ui/student/studentwindow
+14. ui/admin/adminwindow
+15. resources/styles/app.qss
+16. docs/README.md
+为了调试代码，新建一个tests文件夹
+里面会写需要调试文件的入口
+然后进行调试
