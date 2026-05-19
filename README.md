@@ -233,3 +233,145 @@ model文件夹定义Course,Selection,User类,这三个类仅用于接收数据,�
 为了调试代码，新建一个tests文件夹
 里面会写需要调试文件的入口
 然后进行调试
+ 选修课管理系统 - 管理员界面实现计划                                                                                    
+                                                                               
+ Context
+
+ 当前项目是一个基于 Qt6 + C++ + MySQL
+ 的教务选课系统，已有登录窗口和基础架构（MVC分层：Model/DAO/Service/UI）。管理员界面（AdminWindow）目前只是一个空的
+ QWidget 占位，需要实现完整的后台管理功能，包括课程CRUD、选课管理、数据可视化、课程申请审核。
+
+ 需要修改/新增的文件
+
+ 新增文件（共9个）
+
+ ┌────────────────────────────────┬────────────────────────────────────────────┐
+ │              文件              │                    用途                    │
+ ├────────────────────────────────┼────────────────────────────────────────────┤
+ │ Dao/CourseDao.h + .cpp         │ 课程的增删改查数据库操作                   │
+ ├────────────────────────────────┼────────────────────────────────────────────┤
+ │ Dao/SelectionDao.h + .cpp      │ 选课记录的数据库操作                       │
+ ├────────────────────────────────┼────────────────────────────────────────────┤
+ │ Dao/ApplicationDao.h + .cpp    │ 教师课程申请的数据库操作                   │
+ ├────────────────────────────────┼────────────────────────────────────────────┤
+ │ Service/CourseService.h + .cpp │ 课程业务逻辑（含校验）                     │
+ ├────────────────────────────────┼────────────────────────────────────────────┤
+ │ Service/AdminService.h + .cpp  │ 管理员综合业务逻辑（选课管理、审核、统计） │
+ ├────────────────────────────────┼────────────────────────────────────────────┤
+ │ expandable_features.md         │ 可扩展功能清单文档                         │
+ └────────────────────────────────┴────────────────────────────────────────────┘
+
+ 修改文件（共5个）
+
+ ┌─────────────────────────┬────────────────────────────────────────────┐
+ │          文件           │                  变更内容                  │
+ ├─────────────────────────┼────────────────────────────────────────────┤
+ │ adminwindow.h           │ 改为 QMainWindow，添加所有槽函数和成员     │
+ ├─────────────────────────┼────────────────────────────────────────────┤
+ │ adminwindow.cpp         │ 完整的管理员界面逻辑实现                   │
+ ├─────────────────────────┼────────────────────────────────────────────┤
+ │ adminwindow.ui          │ 完整的 Tab 页 UI 布局                      │
+ ├─────────────────────────┼────────────────────────────────────────────┤
+ │ CMakeLists.txt          │ 添加新源文件和 Qt Charts 模块              │
+ ├─────────────────────────┼────────────────────────────────────────────┤
+ │ Service/UserService.cpp │ 修复 AdminWindow 悬垂指针 bug + 按角色跳转 │
+ └─────────────────────────┴────────────────────────────────────────────┘
+
+ 实现架构
+
+ 沿用现有 MVC 分层模式：
+ Model (user.h, course.h, selection.h)
+   -> Dao (CourseDao, SelectionDao, ApplicationDao)
+     -> Service (CourseService, AdminService)
+       -> UI (AdminWindow)
+
+ 数据库表设计
+
+ 需要在 MySQL elective_course_system 数据库中创建以下表：
+
+ -- 课程表
+ CREATE TABLE IF NOT EXISTS courses (
+     course_id VARCHAR(50) PRIMARY KEY,
+     course_name VARCHAR(200) NOT NULL,
+     teacher_name VARCHAR(100) DEFAULT '',
+     credit FLOAT DEFAULT 0,
+     max_capacity INT DEFAULT 0,
+     current_enrolled INT DEFAULT 0,
+     status INT DEFAULT 1
+ );
+
+ -- 选课记录表
+ CREATE TABLE IF NOT EXISTS selections (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     course_id VARCHAR(50),
+     stu_id VARCHAR(50),
+     select_time DATETIME DEFAULT CURRENT_TIMESTAMP
+ );
+
+ -- 教师课程申请表
+ CREATE TABLE IF NOT EXISTS course_applications (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     course_name VARCHAR(200) NOT NULL,
+     teacher_name VARCHAR(100) DEFAULT '',
+     teacher_id VARCHAR(50) DEFAULT '',
+     credit FLOAT DEFAULT 0,
+     max_capacity INT DEFAULT 0,
+     reason TEXT,
+     status INT DEFAULT 0
+ );
+
+ 表创建通过 DbManager 在应用启动时自动执行，无需手动 SQL。
+
+ AdminWindow UI 设计
+
+ 整体布局
+
+ - 继承 QMainWindow（而非当前 QWidget），窗口标题"教务选课系统 - 管理员后台"
+ - 使用 QTabWidget 分四个标签页：
+   a. 课程管理 - 课程增删改查
+   b. 选课管理 - 查看/删除学生选课记录
+   c. 数据可视化 - 选课情况图表
+   d. 课程审核 - 审核教师提交的课程申请
+
+ Tab 1: 课程管理
+
+ - 顶部：搜索栏（按课程名/教师名筛选）+ 新增课程按钮
+ - 中间：QTableWidget 展示所有课程（课程ID、名称、教师、学分、容量、已选人数）
+ - 底部：编辑选中课程 / 删除选中课程 按钮
+ - 新增/编辑使用 QDialog 弹窗
+
+ Tab 2: 选课管理
+
+ - 顶部：筛选下拉框（按课程筛选）
+ - 中间：QTableWidget 展示选课记录（学生ID、学生名、课程名、选课时间）
+ - 操作：退选按钮（删除选课记录，同时更新课程的 current_enrolled）
+
+ Tab 3: 数据可视化
+
+ - 使用 Qt Charts (QChartView) 展示：
+   - 柱状图：各课程选课人数对比
+   - 饼图：课程选课率分布（已选/剩余）
+ - 顶部刷新按钮
+
+ Tab 4: 课程审核
+
+ - 左侧：待审核申请列表（QTableWidget）
+ - 右侧：申请详情展示 + 通过/拒绝按钮
+
+ 关键技术点
+
+ 1. AdminWindow 改为 QMainWindow：支持菜单栏、状态栏、更灵活布局
+ 2. 图表使用 Qt Charts：需要在 CMakeLists.txt 添加 Qt::Charts，install 时需 brew install qt6-charts（如未安装）
+ 3. 修复 UserService.cpp 中的严重 bug：第27行 AdminWindow *a; a->show(); 是未初始化指针，会导致 crash
+ 4. UserService 按角色跳转：role=0 管理员 -> AdminWindow，role=1 学生 -> 学生窗口（暂留接口）
+
+ 验证方式
+
+ 1. 确保 MySQL 服务运行，数据库 elective_course_system 存在
+ 2. 构建项目：cd build && cmake .. && make
+ 3. 启动应用，登录管理员账号（需预先在数据库插入管理员用户）
+ 4. 测试四个标签页的功能是否正常
+ 5. 测试课程 CRUD 流程
+ 6. 测试选课管理和退选逻辑
+ 7. 确认图表正常渲染
+ 8. 测试课程申请审核流程

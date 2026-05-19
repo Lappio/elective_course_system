@@ -1,13 +1,28 @@
 #pragma once
 #include<QString>
+
+
 class User{
 private:
     QString user_name;
-    QString user_password;
-    QString role;
+    QString passwordSalt;
+    int role;
     QString user_id;
-    QString phone_number;
+    QString passwordHash;
+public:
+    void setuser_name(const QString name);
+    void setpassword_Hash(const QString Hash);
+    void setpassword_Salt(const QString Salt);
+    void setrole(int r);
+    void setuser_id(const QString id);
+    QString getuser_name();
+    QString getpasswordSalt();
+    QString getuser_id();
+    int getrole();
+    QString getpasswordHash();
 };
+
+
 class Admin:public User{
 
 };

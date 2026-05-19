@@ -8,4 +8,5 @@ public:
     float credit;
     int max_capacity;
     int current_enrolled;
+    int status = 1; // 1=正常开课, 0=已停课
 };

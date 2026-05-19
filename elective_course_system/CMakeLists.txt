@@ -11,18 +11,37 @@ qt_add_executable(elective_course_system
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    adminwindow.h adminwindow.cpp adminwindow.ui
     db/dbmanager.cpp
+    db/dbmanager.h
     model/user.h
+    model/user.cpp
     model/course.h
     model/selection.h
-    model/user.h
-    db/dbmanager.h
     utils/validators.h
     utils/validators.cpp
     utils/passwordutils.h
     utils/passwordutils.cpp
+    Service/UserService.h
+    Service/UserService.cpp
+    Service/CourseService.h
+    Service/CourseService.cpp
+    Service/AdminService.h
+    Service/AdminService.cpp
+    Dao/UserDao.cpp
+    Dao/UserDao.h
+    Dao/CourseDao.cpp
+    Dao/CourseDao.h
+    Dao/SelectionDao.cpp
+    Dao/SelectionDao.h
+    Dao/ApplicationDao.cpp
+    Dao/ApplicationDao.h
+    Dao/StudentDao.cpp
+    Dao/StudentDao.h
+)
 
-
+target_include_directories(elective_course_system PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(elective_course_system

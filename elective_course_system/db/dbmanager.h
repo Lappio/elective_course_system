@@ -12,16 +12,18 @@ public:
 
     static DbManager& instance();//单例模式
     bool connect();//是否连接成功
-    QSqlDatabase database();//数据库对象
+    QSqlDatabase& database();//数据库对象（返回引用，保证连接生命周期）
+    void createTables();//自动创建数据库表
 
 private:
 
     DbManager() = default;
 
-    ~DbManager() = default;
+    ~DbManager();
 
     DbManager(const DbManager&) = delete;
 
     DbManager& operator=(const DbManager&) = delete;
 
+    QSqlDatabase m_db; // 持有数据库连接，确保不被提前销毁
 };

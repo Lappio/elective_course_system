@@ -1,5 +1,6 @@
 #pragma once
 #include<QString>
+
 class UserService
 {
 
@@ -8,11 +9,3 @@ public:
     UserService();
     ~UserService();
 };
-
-UserService::UserService()
-{
-}
-
-UserService::~UserService()
-{
-}

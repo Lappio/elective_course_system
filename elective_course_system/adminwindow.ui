@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AdminWindow</class>
+ <widget class="QMainWindow" name="AdminWindow">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1100</width><height>750</height></rect>
+  </property>
+  <property name="windowTitle">
+   <string>教务选课系统 - 管理员后台</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+    QMainWindow { background-color: #f5f6fa; }
+    QTabWidget::pane { border: 1px solid #dcdde1; background: white; border-radius: 4px; }
+    QTabBar::tab { padding: 10px 24px; margin-right: 2px; border: 1px solid #dcdde1; border-bottom: none; border-radius: 4px 4px 0 0; background: #ecf0f1; font-size: 14px; }
+    QTabBar::tab:selected { background: white; font-weight: bold; color: #2c3e50; }
+    QTabBar::tab:hover { background: #dfe6e9; }
+    QTableWidget { gridline-color: #ecf0f1; font-size: 13px; selection-background-color: #74b9ff; }
+    QTableWidget::item { padding: 5px; }
+    QHeaderView::section { background: #2c3e50; color: white; padding: 8px; font-weight: bold; border: none; }
+    QPushButton { padding: 8px 20px; border-radius: 4px; font-size: 13px; border: none; }
+    QLineEdit { padding: 8px 12px; border: 1px solid #dcdde1; border-radius: 4px; font-size: 13px; }
+    QLineEdit:focus { border-color: #0984e3; }
+    QComboBox { padding: 8px 12px; border: 1px solid #dcdde1; border-radius: 4px; font-size: 13px; min-width: 150px; }
+    QTextEdit { border: 1px solid #dcdde1; border-radius: 4px; font-size: 13px; background: #fafafa; }
+   </string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
+    <item>
+     <!-- 顶部标题栏 -->
+     <widget class="QWidget" name="headerWidget">
+      <property name="styleSheet"><string>background: #2c3e50;</string></property>
+      <property name="minimumHeight"><number>60</number></property>
+      <property name="maximumHeight"><number>60</number></property>
+      <layout class="QHBoxLayout" name="headerLayout">
+       <item>
+        <widget class="QLabel" name="headerTitle">
+         <property name="text"><string>🎓 教务选课管理系统 - 管理员后台</string></property>
+         <property name="styleSheet"><string>color: white; font-size: 20px; font-weight: bold;</string></property>
+        </widget>
+       </item>
+       <item>
+        <spacer/>
+       </item>
+       <item>
+        <widget class="QLabel" name="adminInfoLabel">
+         <property name="text"><string>管理员</string></property>
+         <property name="styleSheet"><string>color: #b2bec3; font-size: 13px;</string></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex"><number>0</number></property>
+      <!-- ========== Tab 1: 课程管理 ========== -->
+      <widget class="QWidget" name="tabCourse">
+       <attribute name="title"><string>📚 课程管理</string></attribute>
+       <layout class="QVBoxLayout" name="courseTabLayout">
+        <property name="spacing"><number>12</number></property>
+        <property name="leftMargin"><number>16</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>16</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <layout class="QHBoxLayout" name="courseTopLayout">
+          <item>
+           <widget class="QLineEdit" name="courseSearchEdit">
+            <property name="placeholderText"><string>搜索课程名或教师名...</string></property>
+            <property name="minimumSize"><size><width>300</width><height>0</height></size></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="courseSearchBtn">
+            <property name="text"><string>🔍 搜索</string></property>
+            <property name="styleSheet"><string>background: #0984e3; color: white;</string></property>
+           </widget>
+          </item>
+          <item>
+           <spacer/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addCourseBtn">
+            <property name="text"><string>＋ 新增课程</string></property>
+            <property name="styleSheet"><string>background: #00b894; color: white; font-weight: bold;</string></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="courseTable">
+          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+          <property name="selectionMode"><enum>QAbstractItemView::SingleSelection</enum></property>
+          <property name="editTriggers"><enum>QAbstractItemView::NoEditTriggers</enum></property>
+          <property name="alternatingRowColors"><bool>true</bool></property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="courseBtnLayout">
+          <item><spacer/></item>
+          <item>
+           <widget class="QPushButton" name="editCourseBtn">
+            <property name="text"><string>✏️ 编辑选中课程</string></property>
+            <property name="styleSheet"><string>background: #fdcb6e; color: #2d3436;</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="deleteCourseBtn">
+            <property name="text"><string>🗑️ 删除选中课程</string></property>
+            <property name="styleSheet"><string>background: #e17055; color: white;</string></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <!-- ========== Tab 2: 选课管理 ========== -->
+      <widget class="QWidget" name="tabSelection">
+       <attribute name="title"><string>👥 选课管理</string></attribute>
+       <layout class="QVBoxLayout" name="selectionTabLayout">
+        <property name="spacing"><number>12</number></property>
+        <property name="leftMargin"><number>16</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>16</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <layout class="QHBoxLayout" name="selectionTopLayout">
+          <item>
+           <widget class="QLabel" name="filterLabel"><property name="text"><string>筛选课程：</string></property></widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="selectionFilterCombo"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="refreshSelectionBtn">
+            <property name="text"><string>🔄 刷新</string></property>
+            <property name="styleSheet"><string>background: #0984e3; color: white;</string></property>
+           </widget>
+          </item>
+          <item><spacer/></item>
+          <item>
+           <widget class="QPushButton" name="removeSelectionBtn">
+            <property name="text"><string>❌ 退选</string></property>
+            <property name="styleSheet"><string>background: #e17055; color: white; font-weight: bold;</string></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="selectionTable">
+          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+          <property name="selectionMode"><enum>QAbstractItemView::SingleSelection</enum></property>
+          <property name="editTriggers"><enum>QAbstractItemView::NoEditTriggers</enum></property>
+          <property name="alternatingRowColors"><bool>true</bool></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <!-- ========== Tab 3: 学生管理 ========== -->
+      <widget class="QWidget" name="tabStudent">
+       <attribute name="title"><string>🎓 学生管理</string></attribute>
+       <layout class="QVBoxLayout" name="studentTabLayout">
+        <property name="spacing"><number>12</number></property>
+        <property name="leftMargin"><number>16</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>16</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <layout class="QHBoxLayout" name="studentTopLayout">
+          <item>
+           <widget class="QLineEdit" name="studentSearchEdit">
+            <property name="placeholderText"><string>搜索学生姓名或学号...</string></property>
+            <property name="minimumSize"><size><width>300</width><height>0</height></size></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="studentSearchBtn">
+            <property name="text"><string>🔍 搜索</string></property>
+            <property name="styleSheet"><string>background: #0984e3; color: white;</string></property>
+           </widget>
+          </item>
+          <item><spacer/></item>
+          <item>
+           <widget class="QPushButton" name="addStudentBtn">
+            <property name="text"><string>＋ 新增学生</string></property>
+            <property name="styleSheet"><string>background: #00b894; color: white; font-weight: bold;</string></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="studentTable">
+          <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+          <property name="selectionMode"><enum>QAbstractItemView::SingleSelection</enum></property>
+          <property name="editTriggers"><enum>QAbstractItemView::NoEditTriggers</enum></property>
+          <property name="alternatingRowColors"><bool>true</bool></property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="studentBtnLayout">
+          <item><spacer/></item>
+          <item>
+           <widget class="QPushButton" name="editStudentBtn">
+            <property name="text"><string>✏️ 编辑选中学生</string></property>
+            <property name="styleSheet"><string>background: #fdcb6e; color: #2d3436;</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="deleteStudentBtn">
+            <property name="text"><string>🗑️ 删除选中学生</string></property>
+            <property name="styleSheet"><string>background: #e17055; color: white;</string></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <!-- ========== Tab 4: 数据可视化 ========== -->
+      <widget class="QWidget" name="tabChart">
+       <attribute name="title"><string>📊 数据可视化</string></attribute>
+       <layout class="QVBoxLayout" name="chartTabLayout">
+        <property name="spacing"><number>12</number></property>
+        <property name="leftMargin"><number>16</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>16</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <layout class="QHBoxLayout" name="chartTopLayout">
+          <item><spacer/></item>
+          <item>
+           <widget class="QPushButton" name="refreshChartBtn">
+            <property name="text"><string>🔄 刷新图表</string></property>
+            <property name="styleSheet"><string>background: #0984e3; color: white;</string></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QWidget" name="chartContainer">
+          <property name="minimumSize"><size><width>400</width><height>400</height></size></property>
+          <property name="styleSheet"><string>background: white; border: 1px solid #dcdde1; border-radius: 6px;</string></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <!-- ========== Tab 4: 课程审核 ========== -->
+      <widget class="QWidget" name="tabAudit">
+       <attribute name="title"><string>📋 课程审核</string></attribute>
+       <layout class="QHBoxLayout" name="auditTabLayout">
+        <property name="spacing"><number>12</number></property>
+        <property name="leftMargin"><number>16</number></property>
+        <property name="topMargin"><number>16</number></property>
+        <property name="rightMargin"><number>16</number></property>
+        <property name="bottomMargin"><number>16</number></property>
+        <item>
+         <layout class="QVBoxLayout" name="auditLeftLayout">
+          <item>
+           <widget class="QLabel" name="auditTableLabel">
+            <property name="text"><string>待审核申请列表</string></property>
+            <property name="styleSheet"><string>font-size: 14px; font-weight: bold; margin-bottom: 4px;</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="auditTable">
+            <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+            <property name="selectionMode"><enum>QAbstractItemView::SingleSelection</enum></property>
+            <property name="editTriggers"><enum>QAbstractItemView::NoEditTriggers</enum></property>
+            <property name="alternatingRowColors"><bool>true</bool></property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="auditRightLayout">
+          <item>
+           <widget class="QLabel" name="auditDetailLabel">
+            <property name="text"><string>申请详情</string></property>
+            <property name="styleSheet"><string>font-size: 14px; font-weight: bold; margin-bottom: 4px;</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="auditDetailText">
+            <property name="readOnly"><bool>true</bool></property>
+            <property name="minimumSize"><size><width>300</width><height>0</height></size></property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="auditBtnLayout">
+            <item>
+             <widget class="QPushButton" name="approveBtn">
+              <property name="text"><string>✅ 通过申请</string></property>
+              <property name="styleSheet"><string>background: #00b894; color: white; font-weight: bold; padding: 10px 24px;</string></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="rejectBtn">
+              <property name="text"><string>❌ 拒绝申请</string></property>
+              <property name="styleSheet"><string>background: #e17055; color: white; font-weight: bold; padding: 10px 24px;</string></property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry"><rect><x>0</x><y>0</y><width>1100</width><height>24</height></rect></property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
